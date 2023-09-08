@@ -1,0 +1,24 @@
+[project]
+name = "git-heatmap"
+version = "0.0.1"
+authors = [
+  { name="Omar Abou Mrad", email="omar.aboumrad@gmail.com" },
+]
+description = "A tool to generate a heatmap of your git commits"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "click>=8.1.7",
+    "GitPython>=3.1.35"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/omaraboumrad/git-heatmap"
+"Bug Tracker" = "https://github.com/omaraboumrad/git-heatmap/issues"
+
+[project.scripts]
+git-heatmap = "main:run"
