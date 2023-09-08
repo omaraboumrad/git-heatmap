@@ -4,6 +4,12 @@ Shows a heatmap for your Git repositories.
 
 ![Screenshot](screenshot.png)
 
+## Install
+
+```
+$ pip install git-heatmap
+```
+
 ## Usage
 
 ```
@@ -53,3 +59,37 @@ $ git-heatmap -c '●'
 # change colors
 $ git-heatmap -sh "255;255;0"
 ```
+
+## FAQ
+
+### Why?
+
+Mostly fun, I like things cli. It's also rather annoying that github's heatmap only targets the _primary_ branch of a repository.
+
+### Does this count any contribution other than commits?
+
+No, this is purely commits, including merge commits (I think! :-))
+
+### What branch does it pick if I didn't specify one?
+
+All branches!
+
+### But commits are the same in more than one branch!
+
+Yes, that's why it only counts unique commit hashes.
+
+### Where's the damn month row on top?
+
+I got lazy, please submit a PR. The code already calculates where the month abbreviation should be, someone just needs to implement it (See comments)
+
+### This will be slow on large repositories!
+
+Yes, more than likely. I'm using `gitpython` and didn't really dig much into the documentation. The date and author filters are in python, not delegated to git. If you have the solution, please submit PR.
+
+### Why not make this a git extension?
+
+That was the original plan, but we are where we are...
+
+### Can I...
+
+Yes you can. Remember this is meant as tiny fun project.
