@@ -5,10 +5,10 @@ import collections
 import click
 import git
 
-Year = collections.namedtuple("Range", ["start", "end"])(
-    start=datetime.date.today().replace(month=1, day=1),
-    end=datetime.date.today().replace(month=12, day=31),
-)
+
+class Year:
+    start = datetime.date.today().replace(month=1, day=1)
+    end = datetime.date.today().replace(month=12, day=31)
 
 
 def generate_unique_commits(path, author, branches, start, end):
@@ -24,40 +24,24 @@ def generate_unique_commits(path, author, branches, start, end):
         sys.exit(1)
 
     target_branches = branches or repo.branches
-    found = []
+    seen = set()
 
     for branch in target_branches:
-        # Could this be done in one go?
-        for commit in repo.iter_commits(branch):
-            if commit.hexsha in found:
+        # TODO: branches param to iter_commits doesn't
+        # work as expected.
+        for commit in repo.iter_commits(
+            branch,
+            author=author,
+            since=start,
+            until=end,
+        ):
+
+            if commit.hexsha in seen:
                 continue
-            elif (
-                # This is slow for large repos, date filtering
-                # and author filtering shoudl happen via git
-                # and not as a post-condition
-                start <= commit.authored_datetime.date() <= end
-                and (not author or commit.author.email == author)
-            ):
-                yield commit.authored_datetime.date()
             else:
-                # nothing to do
-                pass
+                yield commit.authored_datetime.date()
 
-            found.append(commit.hexsha)
-
-
-def group_by_date(days):
-    """
-    Grouping is done by date since heatmap aggregates
-    based on the date. This is a simple group by date
-    done manually and not via groupby because the
-    latter expects a sorted list.
-    """
-    grouped = collections.defaultdict(int)
-
-    for day in days:
-        grouped[day] += 1
-    return grouped
+            seen.add(commit.hexsha)
 
 
 def generate_heatmap(repo, author, branches, start, end, density_map):
@@ -84,7 +68,7 @@ def generate_heatmap(repo, author, branches, start, end, density_map):
         path=repo, author=author, branches=branches, start=start, end=end
     )
 
-    grouped_commits = group_by_date(unique_commits)
+    grouped_commits = collections.Counter(unique_commits)
 
     heatmap = [[], [], [], [], [], [], []]
     month_start_columns = []
