@@ -118,7 +118,7 @@ def vali_date(ctx, param, value):
     try:
         return datetime.datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError:
-        raise click.BadParameter("format must be 'NdM'")
+        raise click.BadParameter("format must be 'YYYY-MM-DD'")
 
 
 def amplify(rgb, rate):
