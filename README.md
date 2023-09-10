@@ -2,7 +2,7 @@
 
 Shows a heatmap for your Git repositories.
 
-![Screenshot](screenshot.png)
+![Screenshot](screenshot1.png)
 
 ## Install
 
@@ -31,15 +31,21 @@ Options:
 
 Run `git-heatmap` ...
 
-```
+```bash
 # in a directory that's already a git repository
 $ git-heatmap
 
 # on a repository elsewhere
 $ git-heatmap -r /path/to/repo
 
+# on multiple repositories!
+$ git-heatmap -r /path/to/repo -r /path/to/other
+
 # limit by author email
 $ git-heatmap -a me@myself.com
+
+# limit by multiple authors email
+$ git-heatmap -a me@myself.com -a him@himself.com
 
 # pick a specific branch
 $ git-heatmap -b main
@@ -51,14 +57,24 @@ $ git-heatmap -b main -b develop
 $ git-heatmap -s 2023-02-01
 
 # end on date
-$ git-heatmap -s 2023-02-28
+$ git-heatmap -e 2023-02-28
+```
 
+How about some character and color change as well?
+
+![Screenshot](screenshot2.png)
+
+You can do this via:
+
+```bash
 # change characters
-$ git-heatmap -c '●'
+$ git-heatmap -c '⊚'
 
 # change colors
 $ git-heatmap -sh "255;255;0"
 ```
+
+
 
 ## FAQ
 
@@ -84,7 +100,9 @@ I got lazy, please submit a PR. The code already calculates where the month abbr
 
 ### This will be slow on large repositories!
 
-Yes, more than likely. I'm using `gitpython` and didn't really dig much into the documentation. The date and author filters are in python, not delegated to git. If you have the solution, please submit PR.
+~Yes, more than likely. I'm using `gitpython` and didn't really dig much into the documentation. The date and author filters are in python, not delegated to git. If you have the solution, please submit PR.~
+
+It won't, gitpython's `iter_commits` offloads to `git-rev-list`, which is fast.
 
 ### Why not make this a git extension?
 
