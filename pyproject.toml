@@ -1,6 +1,6 @@
 [project]
 name = "git-heatmap"
-version = "0.0.5"
+version = "0.0.6"
 authors = [
   { name="Omar Abou Mrad", email="omar.aboumrad@gmail.com" },
 ]

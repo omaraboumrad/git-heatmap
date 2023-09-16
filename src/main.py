@@ -75,7 +75,8 @@ def generate_heatmap(repos, author, branches, start, end, density_map):
         for i in range(day_of_week):
             heatmap[i].append(0)
 
-    while current_day <= end:  # O(n)
+    while current_day <= end:  # one shot
+        # -start-
         # This particular block will be used to calculate
         # where a specific month label (Jan, Feb...) should
         # start.
@@ -84,6 +85,7 @@ def generate_heatmap(repos, author, branches, start, end, density_map):
             month_start_columns.append((0, month_abbrev))
         elif current_day.day == 1:
             month_start_columns.append((len(heatmap[day_of_week]), month_abbrev))
+        # -end-
 
         value = grouped_commits.get(current_day, 0)
         density = next(idx for idx, func in enumerate(density_map) if func(value))
@@ -91,17 +93,29 @@ def generate_heatmap(repos, author, branches, start, end, density_map):
         current_day += datetime.timedelta(days=1)
         day_of_week = (current_day.weekday() + 1) % 7
 
-    return heatmap
+    return heatmap, month_start_columns
+
+
+def visualize_month_row(months):
+    """Month row visualizer"""
+    WEEKDAY_PAD = 3
+    DISTANCE_PAD = 2
+    yield "   "
+    last_index = 0
+    for idx, month in months:
+        for i in range(idx * DISTANCE_PAD - last_index * DISTANCE_PAD - WEEKDAY_PAD):
+            yield " "
+        last_index = idx
+        yield month
 
 
 def visualize(heatmap, start, end, color_map, character):
     """Heatmap visualization"""
 
-    # TODO: Add month labels as first row
-    # generate_heatmap already collects this
-    # in month_start_columns variable.
+    heatmap, months = heatmap
 
-    print(f'{start.strftime("%Y-%m-%d")} => {end.strftime("%Y-%m-%d")}')
+    print(f'   {start.strftime("%Y-%m-%d")} <= day <= {end.strftime("%Y-%m-%d")}')
+    print("".join(visualize_month_row(months)))
     days = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"]
     for day, row in zip(days, heatmap):
         print(day, end=" ")
@@ -128,13 +142,49 @@ def amplify(rgb, rate):
 
 
 @click.command()
-@click.option("--repo", "-r", default=["."], multiple=True, help="Path to git repository (can be relative)")
-@click.option("--author", "-a", default=[], multiple=True, help="Author email (default all authors)")
-@click.option("--branch", "-b", default=[], multiple=True, help="Branch (default all branches)")
-@click.option("--start", "-s", default=Year.start, callback=vali_date, help="Start date (YYYY-MM-DD, defaults to current year start)")
-@click.option("--end", "-e", default=Year.end, callback=vali_date, help="End date (YYYY-MM-DD, defaults to current year end)")
-@click.option("--character", "-c", default="▧", help="Character to use for heatmap (defaults to ▧)")
-@click.option("--shade", "-sh", default="0;255;0", help="Color to use for heatmap (defaults to 0;255;0)")
+@click.option(
+    "--repo",
+    "-r",
+    default=["."],
+    multiple=True,
+    help="Path to git repository (can be relative)",
+)
+@click.option(
+    "--author",
+    "-a",
+    default=[],
+    multiple=True,
+    help="Author email (default all authors)",
+)
+@click.option(
+    "--branch", "-b", default=[], multiple=True, help="Branch (default all branches)"
+)
+@click.option(
+    "--start",
+    "-s",
+    default=Year.start,
+    callback=vali_date,
+    help="Start date (YYYY-MM-DD, defaults to current year start)",
+)
+@click.option(
+    "--end",
+    "-e",
+    default=Year.end,
+    callback=vali_date,
+    help="End date (YYYY-MM-DD, defaults to current year end)",
+)
+@click.option(
+    "--character",
+    "-c",
+    default="▧",
+    help="Character to use for heatmap (defaults to ▧)",
+)
+@click.option(
+    "--shade",
+    "-sh",
+    default="0;255;0",
+    help="Color to use for heatmap (defaults to 0;255;0)",
+)
 def run(repo, author, branch, start, end, character, shade):
     visualize(
         heatmap=generate_heatmap(

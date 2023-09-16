@@ -94,15 +94,13 @@ All branches!
 
 Yes, that's why it only counts unique commit hashes.
 
-### Where's the damn month row on top?
+### The months labels aren't in line with the github heatmap
 
-I got lazy, please submit a PR. The code already calculates where the month abbreviation should be, someone just needs to implement it (See comments)
+Github got it wrong, check any month's start date and notice how they push the label one column further. If you still feel they got it right, create an issue and show a screenshot, I'll fix it.
 
 ### This will be slow on large repositories!
 
-~Yes, more than likely. I'm using `gitpython` and didn't really dig much into the documentation. The date and author filters are in python, not delegated to git. If you have the solution, please submit PR.~
-
-It won't, gitpython's `iter_commits` offloads to `git-rev-list`, which is fast.
+No, this internally uses `git-rev-list`. 
 
 ### Why not make this a git extension?
 
